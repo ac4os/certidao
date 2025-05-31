@@ -1,0 +1,217 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <title>Certidão de Casamento</title>
+  <style>
+    body {
+      font-family: 'Georgia', serif;
+      background-color: #fffaf5;
+      color: #333;
+      margin: 0;
+      padding: 40px;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      min-height: 100vh;
+    }
+
+    .certidao {
+      border: 5px double #8B0000;
+      padding: 40px;
+      background-color: #fff;
+      max-width: 700px;
+      box-shadow: 0 0 20px rgba(0, 0, 0, 0.1);
+    }
+
+    h1 {
+      text-align: center;
+      color: #8B0000;
+      font-size: 36px;
+      margin-bottom: 10px;
+    }
+
+    h2 {
+      text-align: center;
+      font-style: italic;
+      margin-top: 0;
+      font-size: 20px;
+      color: #555;
+    }
+
+    p {
+      font-size: 18px;
+      line-height: 1.6;
+      text-align: justify;
+    }
+
+    .assinaturas {
+      margin-top: 50px;
+    }
+
+    .assinatura {
+      margin-bottom: 40px;
+      text-align: center;
+    }
+
+    canvas {
+      border: 1px solid #aaa;
+      width: 300px;
+      height: 100px;
+      display: block;
+      margin: 0 auto 10px;
+      cursor: crosshair;
+    }
+
+    button {
+      background-color: #8B0000;
+      color: #fff;
+      border: none;
+      padding: 8px 16px;
+      border-radius: 4px;
+      cursor: pointer;
+    }
+
+    img.assinatura-img {
+      width: 300px;
+      height: auto;
+      margin-bottom: 10px;
+      display: block;
+      margin-left: auto;
+      margin-right: auto;
+    }
+
+    hr {
+      width: 60%;
+      border: none;
+      border-top: 1px solid #000;
+      margin: 10px auto 20px;
+    }
+
+    .footer {
+      text-align: center;
+      margin-top: 60px;
+      font-size: 16px;
+      color: #777;
+    }
+  </style>
+</head>
+<body>
+  <div class="certidao">
+    <h1>Certidão de Casamento</h1>
+    <h2>(Não de cartório, mas 100% do coração)</h2>
+
+    <p>
+      Aos cuidados de quem interessar possa, fica aqui declarado que, neste lindo e abençoado dia, 
+      <strong>Arthur Santos, vulgo caos</strong> e <strong>Ana Luiza, vulgo Ana Mídias</strong> firmam oficialmente sua união eterna de amor, cumplicidade e risadas infinitas.
+    </p>
+
+    <p>
+      Juntos, prometem se apoiar nos momentos bons e difíceis, dividir séries, pipocas e sonhos, e fazer da vida a mais linda história de amor já escrita.
+    </p>
+
+    <p>
+      A partir de hoje, consideram-se virtual e emocionalmente casados. Esta certidão simboliza o compromisso eterno entre os corações aqui envolvidos.
+    </p>
+
+    <div class="assinaturas">
+      <div class="assinatura" id="noivo">
+        <p><strong>Assinatura do Noivo</strong></p>
+        <img id="imgNoivo" class="assinatura-img" style="display:none;">
+        <canvas id="canvasNoivo"></canvas>
+        <button onclick="salvar('canvasNoivo', 'assinaturaNoivo', 'imgNoivo')">Assinar</button>
+        <hr>
+      </div>
+
+      <div class="assinatura" id="noiva">
+        <p><strong>Assinatura da Noiva</strong></p>
+        <img id="imgNoiva" class="assinatura-img" style="display:none;">
+        <canvas id="canvasNoiva"></canvas>
+        <button onclick="salvar('canvasNoiva', 'assinaturaNoiva', 'imgNoiva')">Assinar</button>
+        <hr>
+      </div>
+    </div>
+
+    <div class="footer">
+      Emitido em: <strong><span id="data"></span></strong><br>
+      Local: Onde nossos corações se encontraram 💖
+    </div>
+  </div>
+
+  <script>
+    document.getElementById("data").textContent = new Date().toLocaleDateString('pt-BR');
+
+    function iniciarCanvas(idCanvas) {
+      const canvas = document.getElementById(idCanvas);
+      const ctx = canvas.getContext('2d');
+      let desenhando = false;
+
+      const getPos = (e) => {
+        const rect = canvas.getBoundingClientRect();
+        return {
+          x: (e.touches ? e.touches[0].clientX : e.clientX) - rect.left,
+          y: (e.touches ? e.touches[0].clientY : e.clientY) - rect.top
+        };
+      };
+
+      canvas.addEventListener('mousedown', (e) => {
+        desenhando = true;
+        ctx.beginPath();
+        const pos = getPos(e);
+        ctx.moveTo(pos.x, pos.y);
+      });
+
+      canvas.addEventListener('mousemove', (e) => {
+        if (!desenhando) return;
+        const pos = getPos(e);
+        ctx.lineTo(pos.x, pos.y);
+        ctx.stroke();
+      });
+
+      canvas.addEventListener('mouseup', () => desenhando = false);
+      canvas.addEventListener('mouseleave', () => desenhando = false);
+
+      canvas.addEventListener('touchstart', (e) => {
+        desenhando = true;
+        const pos = getPos(e);
+        ctx.beginPath();
+        ctx.moveTo(pos.x, pos.y);
+      });
+
+      canvas.addEventListener('touchmove', (e) => {
+        if (!desenhando) return;
+        const pos = getPos(e);
+        ctx.lineTo(pos.x, pos.y);
+        ctx.stroke();
+        e.preventDefault();
+      });
+
+      canvas.addEventListener('touchend', () => desenhando = false);
+    }
+
+    function salvar(canvasId, storageKey, imgId) {
+      const canvas = document.getElementById(canvasId);
+      const dataURL = canvas.toDataURL("image/png");
+      localStorage.setItem(storageKey, dataURL);
+      document.getElementById(imgId).src = dataURL;
+      document.getElementById(imgId).style.display = "block";
+      canvas.style.display = "none";
+    }
+
+    function carregarAssinatura(storageKey, imgId, canvasId) {
+      const dataURL = localStorage.getItem(storageKey);
+      if (dataURL) {
+        document.getElementById(imgId).src = dataURL;
+        document.getElementById(imgId).style.display = "block";
+        document.getElementById(canvasId).style.display = "none";
+      }
+    }
+
+    iniciarCanvas("canvasNoivo");
+    iniciarCanvas("canvasNoiva");
+
+    carregarAssinatura("assinaturaNoivo", "imgNoivo", "canvasNoivo");
+    carregarAssinatura("assinaturaNoiva", "imgNoiva", "canvasNoiva");
+  </script>
+</body>
+</html>
