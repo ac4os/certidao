@@ -47,45 +47,31 @@
 
     .assinaturas {
       margin-top: 50px;
+      display: flex;
+      justify-content: space-between;
     }
 
     .assinatura {
-      margin-bottom: 40px;
       text-align: center;
+      width: 45%;
     }
 
-    canvas {
-      border: 1px solid #aaa;
-      width: 300px;
-      height: 100px;
-      display: block;
-      margin: 0 auto 10px;
-      cursor: crosshair;
-    }
-
-    button {
-      background-color: #8B0000;
-      color: #fff;
-      border: none;
-      padding: 8px 16px;
-      border-radius: 4px;
-      cursor: pointer;
-    }
-
-    img.assinatura-img {
-      width: 300px;
-      height: auto;
-      margin-bottom: 10px;
-      display: block;
-      margin-left: auto;
-      margin-right: auto;
-    }
-
-    hr {
-      width: 60%;
+    .linha-assinatura {
+      margin-top: 60px;
       border: none;
       border-top: 1px solid #000;
-      margin: 10px auto 20px;
+      position: relative;
+      height: 1px;
+    }
+
+    .nome-assinatura {
+      position: absolute;
+      top: -30px;
+      left: 50%;
+      transform: translateX(-50%);
+      font-style: italic;
+      font-size: 16px;
+      color: #444;
     }
 
     .footer {
@@ -115,20 +101,17 @@
     </p>
 
     <div class="assinaturas">
-      <div class="assinatura" id="noivo">
-        <p><strong>Assinatura do Noivo</strong></p>
-        <img id="imgNoivo" class="assinatura-img" style="display:none;">
-        <canvas id="canvasNoivo"></canvas>
-        <button onclick="salvar('canvasNoivo', 'assinaturaNoivo', 'imgNoivo')">Assinar</button>
-        <hr>
+      <div class="assinatura">
+        <div class="linha-assinatura">
+          <span class="nome-assinatura">Arthur Santos</span>
+        </div>
+        <p>Assinatura do Noivo</p>
       </div>
-
-      <div class="assinatura" id="noiva">
-        <p><strong>Assinatura da Noiva</strong></p>
-        <img id="imgNoiva" class="assinatura-img" style="display:none;">
-        <canvas id="canvasNoiva"></canvas>
-        <button onclick="salvar('canvasNoiva', 'assinaturaNoiva', 'imgNoiva')">Assinar</button>
-        <hr>
+      <div class="assinatura">
+        <div class="linha-assinatura">
+          <span class="nome-assinatura">Ana Luiza</span>
+        </div>
+        <p>Assinatura da Noiva</p>
       </div>
     </div>
 
@@ -139,79 +122,9 @@
   </div>
 
   <script>
-    document.getElementById("data").textContent = new Date().toLocaleDateString('pt-BR');
-
-    function iniciarCanvas(idCanvas) {
-      const canvas = document.getElementById(idCanvas);
-      const ctx = canvas.getContext('2d');
-      let desenhando = false;
-
-      const getPos = (e) => {
-        const rect = canvas.getBoundingClientRect();
-        return {
-          x: (e.touches ? e.touches[0].clientX : e.clientX) - rect.left,
-          y: (e.touches ? e.touches[0].clientY : e.clientY) - rect.top
-        };
-      };
-
-      canvas.addEventListener('mousedown', (e) => {
-        desenhando = true;
-        ctx.beginPath();
-        const pos = getPos(e);
-        ctx.moveTo(pos.x, pos.y);
-      });
-
-      canvas.addEventListener('mousemove', (e) => {
-        if (!desenhando) return;
-        const pos = getPos(e);
-        ctx.lineTo(pos.x, pos.y);
-        ctx.stroke();
-      });
-
-      canvas.addEventListener('mouseup', () => desenhando = false);
-      canvas.addEventListener('mouseleave', () => desenhando = false);
-
-      canvas.addEventListener('touchstart', (e) => {
-        desenhando = true;
-        const pos = getPos(e);
-        ctx.beginPath();
-        ctx.moveTo(pos.x, pos.y);
-      });
-
-      canvas.addEventListener('touchmove', (e) => {
-        if (!desenhando) return;
-        const pos = getPos(e);
-        ctx.lineTo(pos.x, pos.y);
-        ctx.stroke();
-        e.preventDefault();
-      });
-
-      canvas.addEventListener('touchend', () => desenhando = false);
-    }
-
-    function salvar(canvasId, storageKey, imgId) {
-      const canvas = document.getElementById(canvasId);
-      const dataURL = canvas.toDataURL("image/png");
-      localStorage.setItem(storageKey, dataURL);
-      document.getElementById(imgId).src = dataURL;
-      document.getElementById(imgId).style.display = "block";
-      canvas.style.display = "none";
-    }
-
-    function carregarAssinatura(storageKey, imgId, canvasId) {
-      const dataURL = localStorage.getItem(storageKey);
-      if (dataURL) {
-        document.getElementById(imgId).src = dataURL;
-        document.getElementById(imgId).style.display = "block";
-        document.getElementById(canvasId).style.display = "none";
-      }
-    }
-
-    iniciarCanvas("canvasNoivo");
-    iniciarCanvas("canvasNoiva");
-
-    carregarAssinatura("assinaturaNoivo", "imgNoivo", "canvasNoivo");
-    carregarAssinatura("assinaturaNoiva", "imgNoiva", "canvasNoiva");
+    // Insere a data atual automaticamente
+    const data = new Date().toLocaleDateString('pt-BR');
+    document.getElementById("data").textContent = data;
   </script>
 </body>
 </html>
